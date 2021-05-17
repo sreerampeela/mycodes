@@ -1,2 +1,2 @@
 # mycodes
-codes and scripts for my research work
+codes and scripts for learning python and other scripting languages
