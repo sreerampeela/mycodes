@@ -280,4 +280,343 @@ for i in range(0,1000000):
         tails += 1
 print(heads/tails)
 
-   
+#list comprehension
+text = "eggs, fruit, orange juice"
+breakfast = text.split(",")
+print(type(breakfast))
+lengths = [len(a) for a in breakfast] #list comprehension by using for statement
+print(lengths)
+
+#double index notation - to access lists within a lists; indexing starts from "0"
+a = [[21,32],[4,10]]
+element = a[1][1] #returns 2nd element of 2nd list in the nested list "a"
+
+#always use slice notation to copy a list to another list; THIS DOESNT WORK FOR REPLACING AN ELEMENT IN THE LIST
+list1 = [1,2,3,4,5]
+list2 = list1[:] #copies all elements of list1 into list2
+list2.append(10) #or else both list1 and list2 get appended with new value here
+list2[2]=6 #at index 2, in both list1 and list2 the element is changed to "6" ("SHALLOW COPYING"). Use deep copying to prevent this
+#deep copying can be done using deepcopy() in "copy" module
+list2 = copy.deepcopy(list1) #copies all elements into a new list via deep copying
+
+#sorting a list
+num = [1,3,5,4,2]
+num_copy = num[:] #shallow copying
+print(num_copy)
+num_copy.sort() #sorts values and saves in original list "num_copy"
+print(num_copy) #output - sorted list
+z = sorted(num_copy) #sorts values and saves in a new list "z"
+print(z)
+
+#challenge 9.4 in real python bool - list of lists
+universities = [
+['California Institute of Technology', 2175, 37704],
+['Harvard', 19627, 39849],
+['Massachusetts Institute of Technology', 10566, 40732],
+['Princeton', 7802, 37000],
+['Rice', 5879, 35551],
+['Stanford', 19535, 40569],
+['Yale', 11701, 40500]
+]
+def enrollment_stats(name, noStudents, tutionFee):
+    return list(noStudents, tutionFee)
+def mean_new(variable_list):
+    n = len(variable_list)
+    sum = 0
+    for i in range(0, n):
+        sum += variable_list[i]
+    return float(sum/n)
+def median_new(variable_list):
+    n = len(variable_list)
+    x = sorted(variable_list)
+    if n % 2 != 0:
+        index = round((n+1)/2)
+        median = x[index]
+    else:
+        index = n/2
+        median = x[index]
+    return median
+
+univ = list()
+fee = list()
+students = list()
+number = len(universities)
+for i in range(0, number):
+    univ.append(universities[i][0])
+    fee.append(universities[i][2])
+    students.append(universities[i][1])
+print(univ)
+print(students)
+print(fee)
+
+mean_students = mean_new(students)
+mean_fee = mean_new(fee)
+sum_students = sum(students)
+sum_fee = sum(fee)
+
+median_students = median_new(students)
+median_fee = median_new(fee)
+
+print("*******************************************************")
+print(f"Total students: {sum_students:,}") #"," here prints "," after every 1000th value
+print(f"Total tuition: $ {sum_fee:,}")
+print(f"Student mean: {round(mean_students, 2):,}") # {mean_students:,2f} also rounds off to 2 decimals and "," after every 1000th value
+print(f"Student median: {median_students:,}")
+print(f"Tuition mean: $ {round(mean_fee, 2):,}")
+print(f"Tuition median: $ {median_fee:,}")
+print("******************************************************")
+
+# challenge 9.5 real python book - wax poetic
+nouns = ["fossil", "horse", "aardvark", "judge", "chef", "mango",
+"extrovert", "gorilla"]
+verbs = ["kicks", "jingles", "bounces", "slurps", "meows",
+"explodes", "curdles"]
+adjectives = ["furry", "balding", "incredulous", "fragrant",
+"exuberant", "glistening"]
+prepositions = ["against", "after", "into", "beneath", "upon",
+"for", "in", "like", "over", "within"]
+adverbs = ["curiously", "extravagantly", "tantalizingly",
+"furiously", "sensuously"]
+
+def random_sel(data, iter):
+    import random as rd
+    value = list()
+    i = 1
+    while i <= iter:
+        value.append(rd.choice(data))
+        i += 1
+    return value
+
+def pickoverPoem(noun,verb,adjectives,prepositions,adverbs):
+    nouns = random_sel(noun, 3)
+    verbs = random_sel(verb, 3)
+    adj = random_sel(adjectives, 3)
+    prep = random_sel(prepositions, 2)
+    adv = random_sel(adverbs, 1)
+    text = nouns + verbs + adj + prep + adv
+    print(f"The selected words are {text}")
+    print (f"A {text[6]} {text[0]}", sep = '\n')
+    print(f"A {text[6]} {text[0]} {text[3]} {text[9]} the {text[7]} {text[1]}", sep = '\n')
+    print(f"{text[11]}, the {text[1]} {text[4]}", sep = '\n')
+    print(f"the {text[1]} {text[5]} {text[10]} a {text[8]} {text[2]}")
+
+pickoverPoem(nouns,verbs,adjectives,prepositions,adverbs)
+
+#page 274 prob in real python book
+capitals = {}
+capitals["Enterprise"] =  'Picard'
+capitals["Voyager"] = 'Janeway'
+capitals["Defiant"] = 'Sisko'
+print(capitals)
+if ("Enterprise" in capitals) == False:
+    capitals["Enterprise"] = "unknown"
+if ("Discovery" in capitals) == False:
+    capitals["Discovery"] = "unknown"
+
+print(capitals)
+for ship in capitals:
+    print(f"The {ship} is captained by {capitals[ship]}")
+del capitals["Discovery"]
+print(capitals)
+
+#9.7 challenge in real python book
+capitals_dict = {
+'Alabama': 'Montgomery',
+'Alaska': 'Juneau',
+'Arizona': 'Phoenix',
+'Arkansas': 'Little Rock',
+'California': 'Sacramento',
+'Colorado': 'Denver',
+'Connecticut': 'Hartford',
+'Delaware': 'Dover',
+'Florida': 'Tallahassee',
+'Georgia': 'Atlanta',
+}
+import random as rd
+districts = list(capitals_dict.keys())
+print(districts)
+district = rd.choice(districts)
+while True:
+    response = input(f"Enter the capital for {district}: ")
+
+    if response.lower() == capitals_dict[district].lower():
+        print("Guessed correct!")
+        break
+    elif response.lower() != capitals_dict[district].lower() and response.lower() != "exit":
+        continue
+    elif response.lower() == "exit":
+        print("Goodbye")
+        break
+
+
+#10.4 real python challenge - farm
+
+class Animal:
+    def __init__(self, name, food, sleep, litter):
+        self.name = name
+        self.food = food
+        self.litter = litter
+        self.sleep = sleep
+    def Activity(self):
+        return f"{self.name} eats {food} and gives birth to {litter}"
+
+class Cow(Animal):
+    def __init__(self, name):
+        self.food = "hay"
+        self.sleep = "farm"
+        self.litter = 1
+        self.name = name
+
+    def Activity(self):
+            return f"{self.name} eats {self.food}"
+
+class Pig(Animal):
+    def __init__(self, name):
+        self.name = name
+        self.food = "bio"
+        self.sleep = "pen"
+        self.litter = 10
+    def Activity(self):
+        return f"{self.name} gives birth to {self.litter}"
+
+class Hen(Animal):
+    def __init__(self, name):
+        self.food = "grains"
+        self.sleep = "basket"
+        self.litter = 12
+        self.name = name
+    def Activity(self):
+        return f"{self.name} eats {self.food} and gives birth to {self.litter}"
+
+animal1 = Cow("dodo")
+print(animal1.Activity())
+
+
+#creating package and module
+#main.py - this file has the main script
+#create __init__.py file in my_package folder. Add "#__init__.py" in this file
+#my_package folder should be in the current directory. This folder should have all the modules
+
+import my_package.module1 as m1
+import my_package.module2 as m2
+print(m1.greet("Murthy"))
+print(m2.bye("Sreeram"))
+
+#file paths exercise in realpython 12.2
+import pathlib as pt
+file_path = pt.Path.home() / "Desktop" / "Murthy" / "my_file.txt"
+print(file_path)
+print(file_path.exists())
+print(file_path.parent.name)
+
+
+#12.5 realpython challenge
+import pathlib
+path = pathlib.Path.cwd()
+file_new = path / "starship.txt"
+#file_new.touch()
+lines = """Discovery
+Enterprise
+Defiant
+Voyager"""
+with file_new.open(mode='w') as file:
+    file.write(lines)
+with file_new.open(mode='r') as file2:
+    line = file2.readlines()
+    for n in lines:
+        print(n, end = "")
+
+with file_new.open(mode='r') as file3:
+    line = file3.readlines()
+    print(line)
+    print(type(line))
+    for ship in line:
+        if ship[0] == "D":
+            print(ship)
+
+
+#review exercises 1-4 in realpython 12.6
+import csv
+numbers = [
+    [1, 2, 3, 4, 5],
+    [6, 7, 8, 9, 10],
+    [11, 12, 13, 14, 15],
+    ]
+import pathlib
+#writing the csv file
+file_path = pathlib.Path.home() / "Desktop" / "Murthy" / "numbers.csv"
+file = file_path.open(mode='w')
+writer = csv.writer(file)
+writer.writerows(numbers)
+file.close()
+data = []
+file_read = file_path.open(mode='r')
+reader = csv.reader(file_read)
+
+for num in reader:
+    if num != []:
+        data.append(num)
+print(data)
+file_read.close()
+
+
+file = file_path.open(mode = 'w')
+favorite_colors = [
+    {"name": "Joe", "favorite_color": "blue"},
+    {"name": "Anne", "favorite_color": "green"},
+    {"name": "Bailey", "favorite_color": "red"},
+    ]
+writer = csv.DictWriter(file, fieldnames = ["name", "favorite_color"])
+writer.writeheader()
+writer.writerows(favorite_colors)
+file.close()
+#12.7 realpython - find highest score and the person with it
+
+file = file_path.open(mode='r')
+lines = file.readlines()
+for data in lines:
+    if data != "\n":
+        print(data, end = "")
+file.close()
+
+file = file_path.open(mode='r')
+reader = csv.DictReader(file)
+
+for data in reader:
+    print(data, end = "\n")
+file.close()
+
+
+#12.7 realpython - to find the highest score and the person with it
+file_path = pathlib.Path.home() / "Desktop" / "Murthy" / "scores.csv"
+file = file_path.open(mode = 'r')
+lines = file.readlines()
+scores = []
+#finding maximum score
+for line in lines[1:]:
+    data = line.split(",")
+    #print(data[1])
+    score = data[1]
+    scores.append(int(score))
+print(scores)
+file.close()
+max_value = max(scores)
+print(max_value)
+#finding the person with max score
+file1 = file_path.open(mode = 'r')
+reader = csv.DictReader(file1)
+print(type(reader))
+dict_values = [] #has only the names and scores as a single list
+for data in reader:
+    for key, value in data.items():
+        dict_values.append(value)
+print(dict_values)
+names = [] #all names here
+indexes = [] #index value(s) for highest score(s)
+for i in dict_values:
+    if i == str(max_value):
+        indexes.append(dict_values.index(i) - 1) #indexing norm
+for j in indexes:
+    names.append(dict_values[j]) #finding the name corresponding to an index
+print(f"The highest scorers are {names} with score {max_value}")
+file.close()
