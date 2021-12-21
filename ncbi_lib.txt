@@ -1,0 +1,124 @@
+import os
+import subprocess
+
+# functions to run specific tasks for NCBI data access
+
+
+def ncbi_utilities():
+
+    def change_dir(nwd):
+        """To change a directory to a new directory. Args are:
+        1. nwd : specify the directory to which the execution should change
+        example: "C:/Users/USER/Desktop/Murthy/data" for windows"""
+        os.chdir(nwd)
+        print("The directory was set to {}".format(nwd))
+
+    def gen_list(file):
+        """Generates a string-based list from the accession numbers specified. Useful for generating loops over all the
+        accession numbers typical of a bioinformatics analysis pipeline. Can be used for similar objectives with other
+        data. Arguments: file: name of the file containing the accession ids. Each id should be placed on a single line"""
+        try:
+            file_in = open(file, mode='r')
+        except FileNotFoundError:
+            print("File not found!!")
+        else:
+            lines = file_in.readlines()
+            acc_list = []
+            for acc in lines:
+                acc_list.append(acc)
+            return acc_list
+        print("Accession ids written from file {}".format(file))
+
+# generating shell script to download SRA data from accession list
+
+    def options_gen(inp=None, file=False, split=True, gzip=True):
+        """To set the options for SRA toolkit
+        l       The file name with accession ids. To be present in the current directory
+        file    The accession ids are supplied as a text file. Default: True
+        split   split the reads if paired-end
+        gzip    Compress the reads file"""
+        if file is True:
+            id_list = gen_list(inp)
+        # print(id_list)
+        else:
+            id_list = inp[:]
+        # print(id_list)
+        if split is True:
+            split_val = "split-files"
+        else:
+            split_val = ""
+        if gzip is True:
+            zipper = "gzip"
+        else:
+            zipper = ""
+
+        return id_list, split_val, zipper
+
+    def fastqdump(i, split=True, gzip=True):
+        """A function to write the prefetch command for a specified SRA ID (i)"""
+        split_val, zipper = list(options_gen(split, gzip))[1:]
+        return f"fastq-dump --{split_val} --{zipper} {i}"
+
+    def preftch(k):
+        """A function to write the prefetch command for a specified SRA ID (k)"""
+        return f"prefetch {k}"
+
+    def get_sraid(biosam_id):
+        """A function to retreive SRA ids from a given biosample ID. The only argument is the BIOSAMPLE ID"""
+        sra_id = subprocess.run("esearch -db sra -query $biosam_id </dev/null | "
+                            "efetch -format docsum | "
+                            "xtract -pattern Runs -element Run@acc", shell=True, text=True)
+        return sra_id
+
+    def get_sra(inp, shell_script, file=False, split=True, gzip=True):
+        """To download SRA data. Automatically generates shell script with the args specified.
+        inp             Name of the list. Can be generated from gen_list() function specified in the script. If a file
+                        has to be specified, the function args file should be set to True
+        shell_script    Name of the shell script with '.sh' extension
+        file            Boolean value True or False. Set to True if needed to download from a id file. Default: False
+        split           To split the reads as forward and reverse. Default: True
+        gzip            To the compress the SRA files. Default: True"""
+        file_out = open(shell_script, mode='w', encoding='utf-8', newline='\n')
+        id_list, split_val, zipper = options_gen(inp, file, split, gzip)
+        for i in id_list:
+            cmd1 = preftch(i)
+            cmd2 = fastqdump(i, split, gzip)
+            print(type(i))
+            print(cmd1)
+            print(cmd2)
+            file_out.write(cmd1)
+            file_out.write('\n')
+            file_out.write(cmd2)
+            file_out.write('\n')
+        file_out.close()
+        print("Shell script to download SRA files written: {}".format(shell_script))
+        print("Total of {} SRA ids selected for download".format(len(id_list)))
+
+    def get_biosam(inp, shell_script, file=False, split=True, gzip=True):
+        """To download SRA data using Biosample ID. Automatically generates shell script with the args specified.
+        inp             Name of the list. Can be generated from gen_list() function specified in the script. If a file
+                        has to be specified, the function args file should be set to True
+        shell_script    Name of the shell script with '.sh' extension
+        file            Boolean value True or False. Set to True if needed to download from a id file. Default: False
+        split           To split the reads as forward and reverse. Default: True
+        gzip            To the compress the SRA files. Default: True"""
+        try:
+            file_in = open(inp, mode='r')
+        except FileNotFoundError:
+            print("File doesn't exist!")
+        else:
+            file_out = open(shell_script, mode='w', encoding='utf-8', newline='\n')
+            biosamples = file_in.readlines()
+            for j in biosamples:
+                sra_id = get_sraid(j)
+                cmd1 = preftch(sra_id)
+                cmd2 = fastqdump(sra_id, split, gzip)
+                # print(sra_id)
+                # print(cmd1, cmd2, sep='\n')
+                file_out.write(cmd1)
+                file_out.write('\n')
+                file_out.write(cmd2)
+                file_out.write('\n')
+
+            file_in.close()
+            file_out.close()
