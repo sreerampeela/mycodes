@@ -620,3 +620,683 @@ for j in indexes:
     names.append(dict_values[j]) #finding the name corresponding to an index
 print(f"The highest scorers are {names} with score {max_value}")
 file.close()
+
+# script for renaming strain ids in fasta file
+# run the following cmd in linux
+# cat *.fasta >> sequences.fasta ##check file extension of the assembled genomes
+# cat sequences.fasta | grep ">" >> seqids.txt
+
+# navigating to a working directory from the current directory
+import os
+print(os.getcwd())
+os.chdir('C:/Users/USER/Desktop/Murthy/spn_assemblies')
+print(os.getcwd())
+
+# get the strain names or ids from the seqids.txt file
+# open a file handle
+input_file = open('seqids.txt', mode='r')
+lines = input_file.readlines()
+# print(lines)
+# print(len(lines))
+ids = []
+for line in lines:
+    new_line = line.split()
+    ind_val = new_line.index("pneumoniae") + 1
+    if new_line[ind_val] != "strain":
+        id1 = new_line[ind_val]
+    else:
+        ind_val += 1
+        id1 = new_line[ind_val]
+    if id1[-1] == ",":
+        id1 = id1[:-1]
+    ids.append(id1)
+# print(ids)
+print(len(ids))
+input_file2 = open('seqids.txt', mode='r')
+output_file = open('spn_full_assemblies_cleaned.txt', mode='w')
+source_file = open('spn_full_assemblies.fasta', mode='r')
+source_lines = source_file.readlines()
+id_lines = input_file2.readlines()
+for all_line in id_lines:
+    index_val = id_lines.index(all_line)
+    next_id_index = index_val + 1
+    # print(all_line, index_val, next_id_index)
+    if next_id_index < len(id_lines):
+        ind1 = source_lines.index(all_line)
+        ind2 = source_lines.index(id_lines[next_id_index])
+    # print(ind1, ind2)
+        id_new = ids[index_val]
+        print(id_new)
+        output_file.write(str(">" + id_new + "\n"))
+        output_lines = source_lines[ind1+1: ind2]
+        out_seq = ''.join(output_lines)
+        output_file.write(out_seq)
+input_file.close()
+output_file.close()
+source_file.close()
+
+import os
+import subprocess
+
+os.chdir("C:/Users/USER/Downloads")
+Counting DNA Nucleotides ROSALIND
+file_in = open("rosalind_dna (1).txt", mode='r')
+seq = file_in.readlines()
+A=0
+T=0
+G=0
+C=0
+for bp in seq[0]:
+    if bp == "A":
+        A+=1
+    elif bp == "T":
+        T+=1
+    elif bp == "G":
+        G+=1
+    elif bp == "C":
+        C += 1
+print(A,C,G,T)
+
+Transcribing DNA into RNA ROSALIND
+file_in = open("rosalind_rna.txt", mode='r')
+seq = file_in.readlines()[0]
+new_seq = seq.replace("T", "U")
+print(new_seq)
+
+rev complement ROSALIND
+file_in = open("rosalind_revc (8).txt", mode='r')
+seq = file_in.readlines()[0].strip()
+# print(len(seq))
+# rev=["None"] * len(seq)
+# print(len(rev))
+rev_comp = ["None"] * len(seq)
+complement = {"A":"T", "T":"A", "G":"C", "C":"G"}
+rev = seq[::-1]
+print(seq)
+# for i in range(len(seq)):
+#     print(i)
+#     ind = i - len(seq) + 2
+#     print(ind)
+#     rev_comp[i] = complement[seq[ind]]
+
+# reverse = ''.join(rev)
+# print(reverse)
+for j in range(len(rev)):
+    rev_comp[j] = complement[rev[j]]
+# print(rev_comp)
+sequence = ''.join(rev_comp)
+print(sequence)
+print(len(sequence), len(seq))
+
+Rabbits and Recurrence Relations ROSALIND
+file_in = open("rosalind_fib.txt", mode='r')
+data = file_in.readline().strip().split()
+n = int(data[0])
+k = int(data[1])
+print(n,k)
+# n = 5
+# k = 3
+result = [1, 1]
+i1, i2 = result[0], result[1]
+if n > 2:
+    for j in range(3, n+1):
+        res = result[j-2] + (result[j-3] * k)
+        result.append(res)
+print(result)
+
+Computing GC ContentComputing GC Content ROSALIND
+file_in = open("rosalind_gc (3).txt", mode='r')
+file_out = open("result.txt", mode='w')
+data = file_in.readlines()
+GC_data = []
+# print(len(data))
+print(data)
+acc_list = []
+data_dict = {}
+sequences = []
+for k in data:
+    if k[0] == ">":
+        acc_list.append(k)
+# print(acc_list)
+for i in range(len(acc_list)-1):
+    acc = acc_list[i]
+    next_acc = acc_list[i+1]
+    # print(acc,next_acc)
+    begin = data.index(acc) + 1
+    end = data.index(next_acc)
+    seq = data[begin:end]
+    # print(seq)
+    sequence = str()
+    for bp in seq:
+        sequence += bp.strip()
+    sequences.append(sequence)
+    # print(begin,end)
+    # print(sequence)
+last_acc = acc_list[-1]
+sequence_last = data[data.index(last_acc)+1:]
+sequence_last_joined = ''.join(sequence_last)
+sequences.append(sequence_last_joined)
+
+print(sequences)
+for nuc in sequences:
+    # print(len(nuc))
+    G = nuc.count("G")
+    C = nuc.count("C")
+    GC = ((G+C) / len(nuc)) * 100
+    GC_data.append(GC)
+    # print(GC)
+    file_out.write(nuc)
+    file_out.write("\n")
+    file_out.write(str(GC))
+    file_out.write("\n")
+max_gc = max(GC_data)
+max_gc_seq = acc_list[GC_data.index(max_gc)]
+print(max_gc_seq[1:].strip())
+print(max_gc)
+file_in.close()
+file_out.close()
+
+ROSALIND Counting Point Mutations
+file_in = open("rosalind_hamm.txt", mode='r')
+sequence = file_in.readlines()
+sequences = []
+for seq in sequence:
+    sequences.append(seq.rstrip())
+seq1 = sequences[0]
+seq2 = sequences[1]
+dist = 0
+for i in range(len(seq1)):
+    if seq1[i] != seq2[i]:
+        dist += 1
+print(dist)
+
+Mendel's First Law ROSALIND incomplete
+file_in = open("rosalind_hamm.txt", mode='r')
+
+Translation ROSALIND
+codon_table = {"UUU":"F", "CUU":"L", "AUU":"I", "GUU":"V","UUC":"F","CUC":"L", "AUC" : "I", "GUC" : "V",
+               "UUA" : "L", "CUA" : "L", "AUA" : "I", "GUA" : "V", "UUG" : "L", "CUG" : "L", "AUG" : "M", "GUG" : "V",
+               "UCU" : "S", "CCU" : "P", "ACU" : "T", "GCU" : "A", "UCC" : "S", "CCC" : "P", "ACC" : "T", "GCC" : "A",
+               "UCA" : "S", "CCA" : "P", "ACA" : "T", "GCA" : "A", "UCG" : "S", "CCG" : "P", "ACG" : "T", "GCG" : "A",
+               "UAU" : "Y", "CAU" : "H", "AAU" : "N", "GAU" : "D", "UAC" : "Y", "CAC" : "H", "AAC" : "N", "GAC" : "D",
+               "UAA" : "Stop", "CAA" : "Q", "AAA" : "K", "GAA" : "E", "UAG" : "Stop", "CAG" : "Q", "AAG" : "K",
+               "GAG":"E", "UGU" : "C", "CGU" : "R", "AGU" : "S", "GGU" : "G", "UGC" : "C", "CGC" : "R", "AGC" : "S",
+               "GGC" : "G", "UGA" : "Stop", "CGA" : "R", "AGA" : "R", "GGA" : "G", "UGG" : "W", "CGG" : "R",
+               "AGG" : "R", "GGG" : "G"}
+
+file_in = open("rosalind_prot.txt", mode='r')
+nuc_seq = file_in.readlines()[0].rstrip()
+print(nuc_seq)
+aa_seq = str()
+for i in range(0,len(nuc_seq),3):
+    j = i + 3
+    codon = nuc_seq[i:j]
+    print(codon)
+    aa = codon_table[codon]
+    aa_seq += aa
+print(aa_seq)
+
+Finding a Motif in DNA ROSALIND
+file_in = open("rosalind_subs (1).txt", mode='r')
+data = file_in.readlines()
+print(data)
+mystring = data[0].strip()
+query = data[1].strip()
+print(query)
+result = []
+for i in range(0, (len(mystring)-len(query)-1)):
+    j = i + len(query)
+    print(i,j)
+    print(mystring[i:j])
+    if query == str(mystring[i:j]):
+        result.append(i+1)
+print(result)
+
+Consensus and Profile ROSALIND
+formatting error
+file_in = open("rosalind_cons (3).txt", mode='r')
+file_out = open("rosalind_cons_result.txt", mode='w')
+data = file_in.readlines()
+seq = []
+A_result = ["A:"]
+T_result = ["T:"]
+G_result = ["G:"]
+C_result = ["C:"]
+acc_list = []
+sequences = []
+for k in data:
+    if k[0] == ">":
+        acc_list.append(k)
+print(acc_list)
+for i in range(len(acc_list)-1):
+    acc = acc_list[i]
+    next_acc = acc_list[i+1]
+    # print(acc,next_acc)
+    begin = data.index(acc) + 1
+    end = data.index(next_acc)
+    seq = data[begin:end]
+    sequence = ''.join(a.strip() for a in seq)
+    # print(sequence)
+    sequences.append(sequence)
+    # print(seq)
+last_acc = acc_list[-1]
+sequence_last = data[data.index(last_acc)+1:]
+sequence_last_joined = ''.join(sequence_last)
+sequences.append(sequence_last_joined)
+print(sequences)
+k = len(sequences)
+print(k)
+j = len(sequences[0])
+print(j)
+consensus_seq = str()
+for m in range(0,j):
+    seq_con = []
+    for n in range(0, k):
+        bp = sequences[n][m]
+        # print(bp)
+        seq_con.append(bp.strip())
+    # print(seq)
+    A_count = seq_con.count("A")
+    T_count = seq_con.count("T")
+    G_count = seq_con.count("G")
+    C_count = seq_con.count("C")
+    A_result.append(A_count)
+    T_result.append(T_count)
+    G_result.append(G_count)
+    C_result.append(C_count)
+    Counts = [A_count, T_count, G_count, C_count]
+    consensus = max(Counts)
+    con_ind = Counts.index(consensus)
+    if con_ind == 0:
+        app_bp = "A"
+    elif con_ind == 1:
+        app_bp = "T"
+    elif con_ind == 2:
+        app_bp = "G"
+    elif con_ind == 3:
+        app_bp = "C"
+    consensus_seq += app_bp
+consensus_seq += "\n"
+print(consensus_seq)
+# for b in "ACGT":
+#     result = b + "_result"
+#     print(b + ":" + " ".join(str(x) for x in result))
+
+A_result = " ".join(str(x) for x in A_result) + '\n'
+C_result = " ".join(str(x) for x in C_result) + '\n'
+G_result = " ".join(str(x) for x in G_result) + '\n'
+T_result = " ".join(str(x) for x in T_result) + '\n'
+print(A_result.strip())
+print(C_result.strip())
+print(G_result.strip())
+print(T_result.strip())
+file_out.write(consensus_seq)
+file_out.write(A_result)
+file_out.write(C_result)
+file_out.write(G_result)
+file_out.write(T_result)
+
+file_in.close()
+file_out.close()
+
+Mortal Fibonacci Rabbits ROSALIND incomplete
+file_in = open("rosalind_fibd (1).txt", mode='r')
+data = file_in.readline().strip().split()
+n = int(data[0])
+m = int(data[1])
+print(n,m)
+# n = 5
+# k = 3
+result = [1, 1, 2, 2, 3, 4] # 1st 6 months as base case
+if n <= 6:
+    print(result[n-1])
+else:
+    for i in range(6, n+1):
+        new_ones = result[i-1] - result[i-2]
+        old_ones = result[i-2] - result[i-3]
+        res = new_ones - old_ones
+        result.append(res)
+
+print(result[-1])
+
+Finding a Shared Motif ROSALIND
+file_in = open("rosalind_lcsm (2).txt", mode='r')
+file_out = open("result.txt", mode='w')
+data = file_in.readlines()
+acc_list = []
+sequences = []
+for k in data:
+    if k[0] == ">":
+        acc_list.append(k)
+print(len(acc_list))
+for i in range(len(acc_list)-1):
+    acc = acc_list[i]
+    next_acc = acc_list[i+1]
+    # print(acc,next_acc)
+    begin = data.index(acc) + 1
+    end = data.index(next_acc)
+    seq = data[begin:end]
+    sequence = ''.join(a.strip() for a in seq)
+    # print(sequence)
+    sequences.append(sequence)
+    # print(seq)
+last_acc = acc_list[-1]
+sequence_last = data[data.index(last_acc)+1:]
+sequence_last_joined = ''.join(sequence_last)
+sequences.append(sequence_last_joined)
+# print(sequences)
+print(len(sequences))
+small_seq = min(sequences)
+print("The smallest seq is ", small_seq)
+sequences.remove(small_seq)
+strings_list = []
+for j in range(len(small_seq)):
+    for k in range(-1, -len(small_seq[j:])+1, -1):
+        sequence_string = small_seq[j:k]
+        strings_list.append(sequence_string)
+# print(strings_list)
+string_list_new = sorted(strings_list, key=len, reverse=True)
+print(string_list_new)
+lcs = []
+
+for l in range(-1, -len(string_list_new), -1):
+    comp = string_list_new[l].rstrip()
+    result = []
+    for seq in sequences:
+        if comp in seq:
+            result.append(1)
+        else:
+            break
+    # print(result)
+    if sum(result) == len(result):
+        lcs.append(comp)
+
+# print("The longest sequences are :", lcs)
+# for bp in lcs:
+#     bp_new = bp + "\n"
+#     file_out.write(bp_new)
+#     file_out.write("\n")
+# # print("The longest common substring is: ")
+def substring(all_seq,all_substring):
+    global x
+    if all([x in all_seq for x in all_substring]):
+        return x
+
+
+
+
+substr = substring(sequences, string_list_new)
+print(substr)
+file_in.close()
+file_out.close()
+
+
+Open Reading Frames ROSALIND
+file_in = open("rosalind_fibd.txt", mode='r')
+seq = file_in.readlines()[1].strip()
+codon_table = {"UUU":"F", "CUU":"L", "AUU":"I", "GUU":"V","UUC":"F","CUC":"L", "AUC" : "I", "GUC" : "V",
+               "UUA" : "L", "CUA" : "L", "AUA" : "I", "GUA" : "V", "UUG" : "L", "CUG" : "L", "AUG" : "M", "GUG" : "V",
+               "UCU" : "S", "CCU" : "P", "ACU" : "T", "GCU" : "A", "UCC" : "S", "CCC" : "P", "ACC" : "T", "GCC" : "A",
+               "UCA" : "S", "CCA" : "P", "ACA" : "T", "GCA" : "A", "UCG" : "S", "CCG" : "P", "ACG" : "T", "GCG" : "A",
+               "UAU" : "Y", "CAU" : "H", "AAU" : "N", "GAU" : "D", "UAC" : "Y", "CAC" : "H", "AAC" : "N", "GAC" : "D",
+               "UAA" : "Stop", "CAA" : "Q", "AAA" : "K", "GAA" : "E", "UAG" : "Stop", "CAG" : "Q", "AAG" : "K",
+               "GAG":"E", "UGU" : "C", "CGU" : "R", "AGU" : "S", "GGU" : "G", "UGC" : "C", "CGC" : "R", "AGC" : "S",
+               "GGC" : "G", "UGA" : "Stop", "CGA" : "R", "AGA" : "R", "GGA" : "G", "UGG" : "W", "CGG" : "R",
+               "AGG" : "R", "GGG" : "G"}
+seq.replace("T", "U")
+# print(seq)
+seq_complement = seq[::-1]
+print(seq_complement)
+
+Creating a linked list
+class Node:
+    def __init__(self, value=None):
+        self.value = value
+        self.next = None
+class LinkedList:
+    def __init__(self):
+        self.head = Node()
+    def append(self, value):
+        new_node = Node(value)
+        cur = self.head
+        while cur.next!=None:
+            cur = cur.next
+        cur.next = new_node
+    def display(self):
+        elements = []
+        cur_node = self.head
+        while cur_node.next != None:
+            cur_node = cur_node.next
+            elements.append(cur_node.value)
+
+        print(elements)
+
+my_list = LinkedList()
+my_list.append(1)
+my_list.append(2)
+my_list.append(3)
+
+print(my_list)
+my_list.display()
+
+class linked list practice
+class Node:
+    def __init__(self, data=None):
+        self.data = data
+        self.next = None
+
+
+class linkedlist:
+    def __init__(self):
+        self.head = Node()
+
+
+    def attach(self, new):
+        new_node = Node(new)
+        cur_node = self.head
+        while cur_node.next != None:
+                cur_node = cur_node.next
+        cur_node.next = new_node
+
+
+    def printlist(self):
+        list_new = []
+        cur_node = self.head
+        while cur_node.next != None:
+            cur_node = cur_node.next
+            list_new.append(cur_node.data)
+        print(list_new)
+
+
+node1 = "Ram"
+print(node1)
+my_list = linkedlist()
+my_list.attach(node1)
+my_list.printlist()
+node2 = "Sree"
+print(node2)
+my_list.attach(node2)
+my_list.printlist()
+
+problems in python DSA Goodrich
+2.4
+class Flower:
+    def __init__(self, name, petal_no, price):
+        self.name = str(name)
+        self.petal_no = int(petal_no)
+        self.price = float(price)
+
+    def getdata(self, search):
+        search = search.lower()
+        search = search.replace(" ", "")
+        if search == "name":
+            return self.name
+        elif search == "petalnumber":
+            return self.petal_no
+        else:
+            return self.price
+
+
+data = Flower("Daisy", 10, 10.25)
+name = data.getdata("Name")
+print(name)
+print(data.getdata("Petal Number"))
+
+Creating a vector class
+class Vector:
+    def __init__(self, x=0,y=0,z=0):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def print_vector(self):
+        return self.x, self.y, self.z
+
+    def __iter__(self):
+        return self.x, self.y, self.z
+
+    def addvector(self, other):
+        first_vector = list(self.__iter__())
+        other_vector = list(other.__iter__())
+        if len(first_vector) == len(other_vector):
+            print(f"Adding {first_vector} and {other_vector}")
+        # print(type(first_vector))
+            new_vector = [0] * len(first_vector)
+            for i in range(0, len(first_vector)):
+                new_vector[i] = first_vector[i] + other_vector[i]
+            return new_vector
+        else:
+            return "Vectors should be of equal dimensions"
+
+    def subvector(self, other):
+        first_vector = list(self.__iter__())
+        other_vector = list(other.__iter__())
+        if len(first_vector) == len(other_vector):
+            print(f"Subtracting {first_vector} and {other_vector}")
+            # print(type(first_vector))
+            new_vector = [0] * len(first_vector)
+            for i in range(0, len(first_vector)):
+                new_vector[i] = first_vector[i] - other_vector[i]
+            return new_vector
+        else:
+            return "Vectors should be of equal dimensions"
+
+
+vector1 = Vector(1,0,5)
+vector2 = Vector(3,0,7)
+print(vector1.print_vector())
+print(vector2.print_vector())
+added = vector1.addvector(vector2)
+print(added)
+subtracted = vector1.subvector(vector2)
+print(subtracted)
+
+
+filter vcf csv files for removing synonymous snps
+import os
+import pandas as pd
+print(os.getcwd())
+os.chdir("C:/Users/USER/Desktop/Murthy/gpsc_project/clean-reads/SRR8879299")
+# navigate to the specific folder with snippy-results
+print(os.getcwd())
+# # acc_list=["ERR3227767", "ERR3227769", "ERR3227771", "ERR3227773", "ERR3227775", "ERR3227779", "ERR3227781", "ERR3227783",
+# #           "ERR3227784", "ERR3227834", "ERR4784547", "ERR4784551", "ERR4784605", "ERR4784667", "ERR4784676", "ERR4784684",
+# #           "ERR4784688", "ERR4784692", "ERR4784696"]
+# use this in loop to remove all synonymous snps in the csv file
+file_in = open("SRR8879299.csv",mode='r')
+file_out = open("SRR8879299_clean3.csv", mode='w')
+data = file_in.readlines()
+header = data[0]
+vcf_data = data[1:]
+data_new = [header]
+j = 0
+for line in vcf_data:
+    # print(line)
+    if "synonymous_variant" in line:  # some combos with synonymous variants seen in the file
+        data_1 = list(line.split(","))  # split all columns
+        if len(data_1) >= 11: # some columns have very little data
+            effect = data_1[10]
+            eff = effect.split(" ")  # a list with split on EFFECT column
+            # print(eff)
+            if eff[0] != "synonymous_variant":
+                data_new += line
+                j += 1
+        # elif len(data_1) == 6:
+        #     data_new += line
+        #     j += 1
+    else:
+        data_new += line
+        j += 1
+# print(len(data_new))
+for i in data_new:
+    file_out.write(i)
+print(j)  # number of non-synonymous mutations
+
+to combine gff files and fna files in ncbi dataset
+import os
+os.chdir("C:/Users/USER/Desktop/Murthy/data")
+file_in1 = open("assemblies.txt", mode='r')
+file_in2 = open("gff_files.txt", mode='r')
+file_out = open("output_parser.sh", mode='w')
+assemblies = file_in1.readlines()
+gff_files = file_in2.readlines()
+# print(assemblies)
+# print(gff_files)
+for acc in assemblies:
+    for gff in gff_files:
+        acc_1 = acc.strip('\n')
+        ids = gff[:15].strip('\n')
+        # print(acc_1)
+        # print(ids)
+        if acc_1 == ids:
+            # subprocess.Popen("cp", gff, acc_1)
+            line = 'mv {} {}'.format(gff.strip('\n'), acc_1)
+            # print(line)
+            file_out.write(line)
+            file_out.write("\n")
+
+file_in1.close()
+file_in2.close()
+file_out.close()
+
+# !/bin/python3
+
+acc_list = ["ERR2090225", "ERR3227834", "ERR4784551", "ERR4784667", "ERR4784547", "ERR4784688", "ERR4784684",
+            "ERR4784692", "ERR4784605", "ERR3227765", "ERR4784676", "ERR4784696", "SRR8879299", "ERR3227775",
+            "ERR3227773", "ERR3227779", "ERR3227784", "ERR3227767", "ERR3227746", "SRR8879297", "SRR8879296",
+            "ERR3227783", "ERR3227781", "SRR8879298", "ERR3227771"]
+# strains = ["SF1916", "SF1927", "3277", "3690", "6487", "2585", "1192", "2445", "A308", "EX3714", "P276", "6800", "1453",
+           "927", "SF4850", "P766", "P20011", "A2258", "A1645", "P924", "SF621", "A1917", "P776", "7484", "7861"]
+out_file = open("copier.sh", mode='w')
+# r1="_1_paired.cor.fq.gz"
+# r2="_2_paired.cor.fq.gz"
+# f1=".notCombined_1.fastq.gz"
+# f2=".notCombined_2.fastq.gz"
+# fl=".extendedFrags.fastq.gz"
+for acc in acc_list:
+    # strain = strains[acc_list.index(acc)]
+    # acc_r1=acc+r1
+    # acc_r2=acc+r2
+    # acc_f1=acc+f1
+    # acc_f2=acc+f2
+    # acc_fl=acc+fl
+    # acc_out=acc+"_shovill"
+    acc_pr = acc + "_prokka"
+    acc_prot = acc + ".faa"
+    acc_prot_fasta = acc + "_prot.fasta"
+    # cmd1 = "flash -m 20 -M 100 -d $PWD -o {} -z {} {}".format(acc, acc_r1, acc_r2)
+    # out_file.write(cmd1)
+    # out_file.write('\n')
+    # cmd2 = "spades.py --pe1-1 {} --pe1-2 {} --pe1-m {} --only-assembler --isolate --tmp-dir /tmp/{} -k 21,33,43,53,63,75 --threads 6 -o {}".format(acc_f1,acc_f2,acc_fl,acc,acc_out)
+    # out_file.write(cmd2)
+    # out_file.write('\n')
+    # cmd3 = "prokka --centre KIMS --outdir {} --genus Streptococcus --species pneumoniae --strain {} --prefix {} {}/contigs.fasta".format(acc_pr, strain, acc, acc_out)
+    # out_file.write(cmd3)
+    # out_file.write('\n')
+    # cmd4 = "cp {}/{} files_panaroo/".format(acc_pr,acc_gff)
+    # out_file.write(cmd4)
+    cmd5 = "cp {}/{} protein_sequences/{}".format(acc_pr, acc_prot, acc_prot_fasta)
+    out_file.write(cmd5)
+    out_file.write('\n')
+
+out_file.close()
