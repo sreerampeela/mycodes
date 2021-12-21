@@ -126,3 +126,16 @@ def ncbi_utilities():
             
 # shell command to download metadata based on biosample id
 cat biosamids.txt | join-into-groups-of 10 | xargs -n 1 sh -c 'epost -db biosample -id "$0" -format acc | elink -target sra | efetch -db sra -format runinfo -mode xml | xtract -pattern Row -def "NA" -element Run spots bases spots_with_mates avgLength size_MB download_path Experiment LibraryStrategy LibrarySelection LibrarySource LibraryLayout InsertSize InsertDev Platform Model SRAStudy BioProject ProjectID Sample Biosample SampleType TaxID ScientificName SampleName CenterName Submission Consent >> metadata_sra.txt'
+
+
+###script for automated fastq-dump
+cd $PWD/sra_files/sra_new_files #change to the working dir
+#read the contents of the folder into a text file
+ls | grep "^ERR*" > acc_list.txt
+#read the file names in the acc_list.txt file line by line and assign to a list variable
+acc_list=$(cat acc_list.txt | tr "\n" " ")
+#start loop for fastq-dump and choose output directory and compression
+for acc in $acc_list; do
+	fastq-dump --gzip --split-files $PWD/$acc -O ../../
+done
+#end of script for automated fastq-dump
